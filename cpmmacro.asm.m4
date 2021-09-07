@@ -1,7 +1,7 @@
-;; Macro library for CP/M system routines
-;; September 2021
+dnl Macro library for CP/M system routines
+dnl September 2021
 
-;; Macros n this library
+dnl Macros n this library
 
 DEFC EOF = 0x1a
 DEFC ESC = 0x1b
@@ -12,15 +12,35 @@ DEFC BLANK = 32  ; space characater
 DEFC PERIOD = 46 ; decimal point
 DEFC COMMA = 44
 
-;; Generate a "unique" label by concatenating the source line number with a suffix
+dnl Generate a "unique" label by concatenating the source line number with a suffix
 define(LABEL, ``L'__line__`_$1'')
 
-;; Inline macro to embed version number
-;; Usage: VERSION(RELEASE)
-;;    RELEASE is a string
+dnl Inline macro to embed version number
+dnl Usage: VERSION(RELEASE)
+dnl    RELEASE is a string
+
 define(VERSION, `
-    jp LABEL(skip)
-    DEFM "Ver ", $1
+        jp LABEL(skip)
+        DEFM "Ver ", $1
 LABEL(skip):
-    ')
+')
+
+dnl  Copy memory
+dnl  Usage: MEMCPY(TO, FROM, BYTES)
+
+define(MEMCPY, `
+        push bc
+        push de
+        push hl
+        ld de, $1
+        ld hl, $2
+        ld bc, $3
+        ldir
+        pop hl
+        pop de
+        pop bc
+')
+
+
+
 
