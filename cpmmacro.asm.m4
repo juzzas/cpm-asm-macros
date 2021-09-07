@@ -12,11 +12,15 @@ DEFC BLANK = 32  ; space characater
 DEFC PERIOD = 46 ; decimal point
 DEFC COMMA = 44
 
-;; Inlione macro to embed version number
+;; Generate a "unique" label by concatenating the source line number with a suffix
+define(LABEL, ``L'__line__`_$1'')
+
+;; Inline macro to embed version number
 ;; Usage: VERSION(RELEASE)
 ;;    RELEASE is a string
 define(VERSION, `
-    jp version_skip
+    jp LABEL(skip)
     DEFM "Ver ", $1
-version_skip:
+LABEL(skip):
     ')
+
