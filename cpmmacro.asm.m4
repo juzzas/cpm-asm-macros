@@ -75,6 +75,7 @@ __EXIT:
 dnl ===========================================================================
 dnl  Copy memory
 dnl  Usage: MEMCPY(DEST, SOURCE, BYTES)
+dnl         MEMCPY(STRING, SOURCE)
 dnl ===========================================================================
 
 define(MEMCPY, `
@@ -113,6 +114,37 @@ define(MEMSET, `
         ld (hl), $2
         ld bc, $3 - 1
         ldir
+        pop hl
+        pop de
+        pop bc
+')
+
+
+dnl ===========================================================================
+dnl  Compare memory
+dnl  Usage: MEMCMP(DEST, SOURCE, BYTES)
+dnl         Zero flag is set if both regions are the same
+dnl ===========================================================================
+
+define(MEMCMP, `
+        push bc
+        push de
+        push hl
+        ifelse(`$1', `', , `ld de, $1')
+        ifelse(`$2', `', , `ld hl, $2')
+        ld bc, $3
+
+LABEL(repeat):
+        ld a, b
+        or c
+        jr z, LABEL(abort)
+
+        ld a, (de)
+        cpi
+        inc de
+        jr z, LABEL(repeat)
+
+LABEL(abort):
         pop hl
         pop de
         pop bc
