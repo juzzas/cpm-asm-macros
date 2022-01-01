@@ -224,3 +224,22 @@ LABEL(not_up):
         ifelse(`$1', `', , `ld $1, a')
 
 ')
+
+
+dnl ===========================================================================
+dnl  retrieve the upper nybble from a register
+dnl  Usage: UPPER_NYB(REG)
+dnl         UPPER_NYB()     (assumes A register)
+dnl ===========================================================================
+
+define(UPPER_NYB, `
+        ifelse(`$1', `', , `ld a, $1')
+
+        rar
+        rar
+        rar
+        rar
+        and 0x0f
+
+        ifelse(`$1', `', , `ld $1, a')
+')
