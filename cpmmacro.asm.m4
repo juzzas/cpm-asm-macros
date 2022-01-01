@@ -157,3 +157,51 @@ LABEL(abort):
         pop de
         pop bc
 ')
+
+
+dnl ===========================================================================
+dnl  Compare memory ASCII
+dnl  Usage: MEMCMPA(DEST, SOURCE, BYTES)
+dnl         MEMCMPA(DEST, STRING)
+dnl         Zero flag is set if both regions are the same
+dnl ===========================================================================
+
+define(MEMCMPA, `
+        push bc
+        push de
+        push hl
+        ifelse(`$1', `', , `ld de, $1')
+        ifelse(`$3', `', `
+            ld hl, LABEL(text)
+            ld bc, LABEL(text_end)-LABEL(text)
+        ', `
+            ifelse(`$2', `', , `ld hl, $2')
+            ld bc, $3
+        ')
+
+LABEL(repeat):
+        ld a, b
+        or c
+        jr z, LABEL(abort)
+
+        ld a, (de)
+        and 0x7f
+        cp (hl)
+        inc de
+        inc hl
+        dec bc
+        jr z, LABEL(repeat)
+
+LABEL(abort):
+        pop hl
+        pop de
+        pop bc
+
+        ifelse(`$3', `', `
+            jp LABEL(skip)
+LABEL(text):
+            DEFB $2
+            DEFC LABEL(text_end) = $
+LABEL(skip):
+        ')
+')
