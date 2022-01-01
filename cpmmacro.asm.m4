@@ -205,3 +205,22 @@ LABEL(text):
 LABEL(skip):
         ')
 ')
+
+
+dnl ===========================================================================
+dnl  To Upper
+dnl  Usage: UCASE(REG)
+dnl         UCASE()     (assumes A register)
+dnl ===========================================================================
+
+define(UCASE, `
+        ifelse(`$1', `', , `ld a, $1')
+
+        cp 0x61   ; Z + 7
+        jp c, LABEL(not_up)
+        and 0x5f  ;make uppercase
+
+LABEL(not_up):
+        ifelse(`$1', `', , `ld $1, a')
+
+')
