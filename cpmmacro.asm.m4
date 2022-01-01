@@ -75,27 +75,35 @@ __EXIT:
 dnl ===========================================================================
 dnl  Copy memory
 dnl  Usage: MEMCPY(DEST, SOURCE, BYTES)
-dnl         MEMCPY(STRING, SOURCE)
+dnl         MEMCPY(DEST, STRING)
 dnl ===========================================================================
 
 define(MEMCPY, `
         push bc
         push de
         push hl
+
         ifelse(`$1', `', , `ld de, $1')
-        ifelse(`$2', `', , `ld hl, $2')
-        ifelse(`$3', `', `ld bc, LABEL(text_end)-LABEL(text)', `ld bc, $3' )
+        ifelse(`$3', `', `
+            ld hl, LABEL(text)
+            ld bc, LABEL(text_end)-LABEL(text)
+        ', `
+            ifelse(`$2', `', , `ld hl, $2')
+            ld bc, $3
+        ')
+
         ldir
         pop hl
         pop de
         pop bc
-    ifelse(`$3', `', `
-        jp LABEL(skip)
+
+        ifelse(`$3', `', `
+            jp LABEL(skip)
 LABEL(text):
-        DEFB $2
-        DEFC LABEL(text_end) = $
+            DEFB $2
+            DEFC LABEL(text_end) = $
 LABEL(skip):
-    ')
+        ')
 ')
 
 
