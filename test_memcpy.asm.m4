@@ -12,11 +12,12 @@ start:
         MEMCPY(newtext2, "Hello world")
 
         LD DE, newtext3
-        MEMCPY_DE(text, textend-text)
+        MEMCPY(, text, textend-text)
 
         LD DE, newtext4
-        MEMCPY_DE(`"Hello world", 10, 13')
+        MEMCPY(, `"Hello world", 10, 13')
 
+        MEMCPY(, "Hello world")
         jp BOOT
 
 
