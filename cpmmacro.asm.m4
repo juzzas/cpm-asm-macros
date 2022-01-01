@@ -12,12 +12,17 @@ DEFC BLANK = 32  ; space characater
 DEFC PERIOD = 46 ; decimal point
 DEFC COMMA = 44
 
+dnl ===========================================================================
 dnl Generate a "unique" label by concatenating the source line number with a suffix
+dnl ===========================================================================
 define(LABEL, ``L'__line__`_$1'')
 
+
+dnl ===========================================================================
 dnl Inline macro to embed version number
 dnl Usage: VERSION(RELEASE)
 dnl    RELEASE is a string
+dnl ===========================================================================
 
 define(VERSION, `
         jp LABEL(skip)
@@ -25,8 +30,51 @@ define(VERSION, `
 LABEL(skip):
 ')
 
+
+dnl ===========================================================================
+dnl ENTER (requires use of EXIT)
+dnl Usage ENTER(STACK_BUFFER_SIZE)
+dnl ===========================================================================
+
+define(ENTER, `
+        ld (OLD_STACK_SP), sp
+        ld sp, STACK_BUFFER
+
+SECTION data_user
+OLD_STACK_SP:
+        DEFS  2
+
+    ifelse(`$1', `', `
+        DEFS 34
+        ', `
+        DEFS $1
+    ')
+STACK_BUFFER:
+
+SECTION code_user
+')
+
+
+dnl ===========================================================================
+dnl Exit
+dnl Usage: EXIT(JP_ADDR)
+dnl ===========================================================================
+
+define(EXIT, `
+        ld SP, (OLD_STACK_SP)
+
+    ifelse(`$1', `', `
+        ret
+        ', `
+        jp $1
+    ')
+')
+
+
+dnl ===========================================================================
 dnl  Copy memory
 dnl  Usage: MEMCPY(TO, FROM, BYTES)
+dnl ===========================================================================
 
 define(MEMCPY, `
         push bc
