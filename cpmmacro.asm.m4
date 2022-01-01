@@ -37,11 +37,11 @@ dnl Usage ENTER(STACK_BUFFER_SIZE)
 dnl ===========================================================================
 
 define(ENTER, `
-        ld (OLD_STACK_SP), sp
-        ld sp, STACK_BUFFER
+        ld (__OLD_STACK_SP), sp
+        ld sp, __STACK_BUFFER
 
 SECTION data_user
-OLD_STACK_SP:
+__OLD_STACK_SP:
         DEFS  2
 
     ifelse(`$1', `', `
@@ -49,7 +49,7 @@ OLD_STACK_SP:
         ', `
         DEFS $1
     ')
-STACK_BUFFER:
+__STACK_BUFFER:
 
 SECTION code_user
 ')
@@ -61,7 +61,8 @@ dnl Usage: EXIT(JP_ADDR)
 dnl ===========================================================================
 
 define(EXIT, `
-        ld SP, (OLD_STACK_SP)
+__EXIT:
+        ld SP, (__OLD_STACK_SP)
 
     ifelse(`$1', `', `
         ret
@@ -73,7 +74,7 @@ define(EXIT, `
 
 dnl ===========================================================================
 dnl  Copy memory
-dnl  Usage: MEMCPY(TO, FROM, BYTES)
+dnl  Usage: MEMCPY(DEST, SOURCE, BYTES)
 dnl ===========================================================================
 
 define(MEMCPY, `
@@ -97,3 +98,22 @@ LABEL(skip):
 ')
 
 
+dnl ===========================================================================
+dnl  Fill memory
+dnl  Usage: MEMSET(DEST, VALUE, BYTES)
+dnl ===========================================================================
+
+define(MEMSET, `
+        push bc
+        push de
+        push hl
+        ifelse(`$1', `', , `ld de, $1')
+        ld hl, de
+        inc de
+        ld (hl), $2
+        ld bc, $3 - 1
+        ldir
+        pop hl
+        pop de
+        pop bc
+')
