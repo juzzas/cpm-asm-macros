@@ -6,8 +6,8 @@ DEFC BOOT = 0
 SECTION code_user
 
 start:
-        ENTER
         VERSION("20220101")
+        ENTER
 
 test1:
         ld b, 0x61  ; 'a'
@@ -37,7 +37,6 @@ test7:
         PUTCH
 
         EXIT
-        SYSF_JT
 
 msg1a:
         DEFM "Hello"

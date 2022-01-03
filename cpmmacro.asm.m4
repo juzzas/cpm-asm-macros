@@ -42,8 +42,8 @@ dnl ===========================================================================
 define(ENTER, `
         ld (__OLD_STACK_SP), sp
         ld sp, __STACK_BUFFER
+        jp LABEL(skip)
 
-SECTION data_user
 __OLD_STACK_SP:
         DEFS  2
 
@@ -53,8 +53,7 @@ __OLD_STACK_SP:
         DEFS $1
     ')
 __STACK_BUFFER:
-
-SECTION code_user
+LABEL(skip):
 ')
 
 
@@ -72,6 +71,8 @@ __EXIT:
         ', `
         jp $1
     ')
+
+        SYSF_JT
 ')
 
 dnl ===========================================================================
