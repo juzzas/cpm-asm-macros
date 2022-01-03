@@ -35,6 +35,17 @@ define(LABEL, ``L'__line__`_$1'')
 
 
 dnl ===========================================================================
+dnl Macro to output CRLF to the console
+dnl ===========================================================================
+define(CRLF, `
+    push af
+    PUTCH(CR)
+    PUTCH(LF)
+    pop af
+')
+
+
+dnl ===========================================================================
 dnl ENTER (requires use of EXIT)
 dnl Usage ENTER(STACK_BUFFER_SIZE)
 dnl ===========================================================================
@@ -215,8 +226,8 @@ dnl  Usage: READCH(REG)
 dnl         READCH()     (assumes A register)
 dnl ===========================================================================
 define(READCH, `
-        ifelse(`$1', `', , `ld a, $1')
         call SYSF_rdch
+        ifelse(`$1', `', , `ld $1, a')
 ')
 
 

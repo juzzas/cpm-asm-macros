@@ -36,6 +36,10 @@ test7:
         ld a, '#'
         PUTCH
 
+test8:
+        CRLF
+
+exit:
         EXIT
 
 msg1a:
