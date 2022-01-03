@@ -1,7 +1,19 @@
 dnl Macro library for CP/M system routines
 dnl September 2021
 
-dnl Macros n this library
+dnl ############################################################################
+dnl Macros in this library
+dnl
+dnl ENTER
+dnl EXIT
+dnl MEMCMP(DEST, SOURCE, BYTES)
+dnl MEMCMPA(DEST, SOURCE, BYTES)
+dnl MEMCPY(DEST, SOURCE, BYTES)
+dnl TOUPPER(REG)
+dnl UPPER_NYB(REG)
+dnl VERSION(RELEASE)
+dnl ############################################################################
+
 
 DEFC EOF = 0x1a
 DEFC ESC = 0x1b
@@ -16,19 +28,6 @@ dnl ===========================================================================
 dnl Generate a "unique" label by concatenating the source line number with a suffix
 dnl ===========================================================================
 define(LABEL, ``L'__line__`_$1'')
-
-
-dnl ===========================================================================
-dnl Inline macro to embed version number
-dnl Usage: VERSION(RELEASE)
-dnl    RELEASE is a string
-dnl ===========================================================================
-
-define(VERSION, `
-        jp LABEL(skip)
-        DEFM "Ver ", $1
-LABEL(skip):
-')
 
 
 dnl ===========================================================================
@@ -70,63 +69,6 @@ __EXIT:
         jp $1
     ')
 ')
-
-
-dnl ===========================================================================
-dnl  Copy memory
-dnl  Usage: MEMCPY(DEST, SOURCE, BYTES)
-dnl         MEMCPY(DEST, STRING)
-dnl ===========================================================================
-
-define(MEMCPY, `
-        push bc
-        push de
-        push hl
-
-        ifelse(`$1', `', , `ld de, $1')
-        ifelse(`$3', `', `
-            ld hl, LABEL(text)
-            ld bc, LABEL(text_end)-LABEL(text)
-        ', `
-            ifelse(`$2', `', , `ld hl, $2')
-            ld bc, $3
-        ')
-
-        ldir
-        pop hl
-        pop de
-        pop bc
-
-        ifelse(`$3', `', `
-            jp LABEL(skip)
-LABEL(text):
-            DEFB $2
-            DEFC LABEL(text_end) = $
-LABEL(skip):
-        ')
-')
-
-
-dnl ===========================================================================
-dnl  Fill memory
-dnl  Usage: MEMSET(DEST, VALUE, BYTES)
-dnl ===========================================================================
-
-define(MEMSET, `
-        push bc
-        push de
-        push hl
-        ifelse(`$1', `', , `ld de, $1')
-        ld hl, de
-        inc de
-        ld (hl), $2
-        ld bc, $3 - 1
-        ldir
-        pop hl
-        pop de
-        pop bc
-')
-
 
 dnl ===========================================================================
 dnl  Compare memory
@@ -206,14 +148,71 @@ LABEL(skip):
         ')
 ')
 
+dnl ===========================================================================
+dnl  Copy memory
+dnl  Usage: MEMCPY(DEST, SOURCE, BYTES)
+dnl         MEMCPY(DEST, STRING)
+dnl ===========================================================================
+
+define(MEMCPY, `
+        push bc
+        push de
+        push hl
+
+        ifelse(`$1', `', , `ld de, $1')
+        ifelse(`$3', `', `
+            ld hl, LABEL(text)
+            ld bc, LABEL(text_end)-LABEL(text)
+        ', `
+            ifelse(`$2', `', , `ld hl, $2')
+            ld bc, $3
+        ')
+
+        ldir
+        pop hl
+        pop de
+        pop bc
+
+        ifelse(`$3', `', `
+            jp LABEL(skip)
+LABEL(text):
+            DEFB $2
+            DEFC LABEL(text_end) = $
+LABEL(skip):
+        ')
+')
+
+
+dnl ===========================================================================
+dnl  Fill memory
+dnl  Usage: MEMSET(DEST, VALUE, BYTES)
+dnl ===========================================================================
+
+define(MEMSET, `
+        push bc
+        push de
+        push hl
+        ifelse(`$1', `', , `ld de, $1')
+        ld hl, de
+        inc de
+        ld (hl), $2
+        ld bc, $3 - 1
+        ldir
+        pop hl
+        pop de
+        pop bc
+')
+
+
+
 
 dnl ===========================================================================
 dnl  To Upper
-dnl  Usage: UCASE(REG)
-dnl         UCASE()     (assumes A register)
+dnl  Usage: TOUPPER(REG)
+dnl         TOUPPER()     (assumes A register)
 dnl ===========================================================================
 
-define(UCASE, `
+define(TOUPPER, `
         ifelse(`$1', `', , `ld a, $1')
 
         cp 0x61   ; Z + 7
@@ -243,3 +242,17 @@ define(UPPER_NYB, `
 
         ifelse(`$1', `', , `ld $1, a')
 ')
+
+dnl ===========================================================================
+dnl Inline macro to embed version number
+dnl Usage: VERSION(RELEASE)
+dnl    RELEASE is a string
+dnl ===========================================================================
+
+define(VERSION, `
+        jp LABEL(skip)
+        DEFM "Ver ", $1
+LABEL(skip):
+')
+
+
