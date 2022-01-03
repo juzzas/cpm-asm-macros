@@ -9,12 +9,16 @@ dnl EXIT
 dnl MEMCMP(DEST, SOURCE, BYTES)
 dnl MEMCMPA(DEST, SOURCE, BYTES)
 dnl MEMCPY(DEST, SOURCE, BYTES)
+dnl PCHAR(VAL)
+dnl READCH(REG)
+dnl SYSF(FUNC, AE)
 dnl TOUPPER(REG)
 dnl UPPER_NYB(REG)
 dnl VERSION(RELEASE)
 dnl ############################################################################
 
 
+DEFC BDOS = 5
 DEFC EOF = 0x1a
 DEFC ESC = 0x1b
 DEFC CR = 13
@@ -204,7 +208,59 @@ define(MEMSET, `
 ')
 
 
+dnl ===========================================================================
+dnl  Read character from console
+dnl  Usage: READCH(REG)
+dnl         READCH()     (assumes A register)
+dnl ===========================================================================
+define(READCH, `
+        ifelse(`$1', `', , `ld a, $1')
+        call SYSF_rdch
+')
 
+
+dnl ===========================================================================
+dnl  Put character to console
+dnl  Usage: PUTCH(REG)
+dnl         PUTCH()     (assumes A register)
+dnl ===========================================================================
+define(PUTCH, `
+        ifelse(`$1', `', , `ld a, $1')
+        call SYSF_pch2
+')
+
+dnl ===========================================================================
+dnl System Function
+dnl Macro to generate BDOS calls
+dnl FUNC is a BDOS function number for reg C
+dnl
+dnl Usage:    open:  SYSF 15
+dnl           pchar: SYSF 2, AE
+dnl ===========================================================================
+
+define(SYSF, `
+        push hl
+        push de
+        push bc
+        ld c, $1
+        ifelse(`$2', `', `
+            call BDOS
+        ', `
+            ld e, a
+            push af
+            call BDOS
+            pop af
+        ')
+        pop bc
+        pop de
+        pop hl
+        ret
+')
+
+define(SYSF_JT, `
+SYSF_rdch: SYSF(1)
+SYSF_pch2: SYSF(2, AE)
+')
 
 dnl ===========================================================================
 dnl  To Upper

@@ -11,25 +11,33 @@ start:
 
 test1:
         ld b, 0x61  ; 'a'
-        UCASE(b)
+        TOUPPER(b)
 
 test2:
         ld a, 0x7a  ; 'z'
-        UCASE()
+        TOUPPER()
 
 test3:
         ld b, 0x41  ; 'A'
-        UCASE(b)
+        TOUPPER(b)
 
 test4:
         ld a, 0x5a  ; 'z'
-        UCASE()
+        TOUPPER()
 
 test5:
         ld a, 0x35  ; '5'
-        UCASE()
+        TOUPPER()
+
+test6:
+        READCH
+
+test7:
+        ld a, '#'
+        PUTCH
 
         EXIT
+        SYSF_JT
 
 msg1a:
         DEFM "Hello"
